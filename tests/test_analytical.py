@@ -2,16 +2,17 @@ import jax
 import jax.numpy as jnp
 import pytest
 
-jax.config.update("jax_enable_x64", True)
-
 from finax.analytical import (
     bs_call_price,
     bs_put_price,
-    bs_delta,
     bs_gamma,
     bs_vega,
-    bs_rho,
-    bs_theta,
+    bs_call_delta,
+    bs_put_delta,
+    bs_call_rho,
+    bs_put_rho,
+    bs_call_theta,
+    bs_put_theta,
 )
 
 S = jnp.float64(100.0)
@@ -46,8 +47,7 @@ def test_put_call_parity():
 
 
 def test_call_delta_atm():
-    delta = bs_delta(S, K, r, sigma, T, option_type="call")
-    assert jnp.isclose(delta, jnp.float64(0.6368306511), atol=1e-6)
+    assert jnp.isclose(bs_call_delta(S, K, r, sigma, T), jnp.float64(0.6368306511), atol=1e-6)
 
 
 def test_gamma_symmetric():
@@ -65,11 +65,11 @@ def test_greeks_match_grad_call():
     grad_sigma = jax.grad(bs_call_price, argnums=3)(S, K, r, sigma, T)
     grad_T = jax.grad(bs_call_price, argnums=4)(S, K, r, sigma, T)
 
-    assert jnp.abs(bs_delta(S, K, r, sigma, T, "call") - grad_S) < 1e-6
+    assert jnp.abs(bs_call_delta(S, K, r, sigma, T) - grad_S) < 1e-6
     assert jnp.abs(bs_vega(S, K, r, sigma, T) - grad_sigma) < 1e-6
-    assert jnp.abs(bs_rho(S, K, r, sigma, T, "call") - grad_r) < 1e-6
+    assert jnp.abs(bs_call_rho(S, K, r, sigma, T) - grad_r) < 1e-6
     # Theta is defined as -dV/dT (time decay convention), so theta == -grad_T.
-    assert jnp.abs(bs_theta(S, K, r, sigma, T, "call") + grad_T) < 1e-6
+    assert jnp.abs(bs_call_theta(S, K, r, sigma, T) + grad_T) < 1e-6
 
 
 def test_greeks_match_grad_put():
@@ -78,10 +78,10 @@ def test_greeks_match_grad_put():
     grad_sigma = jax.grad(bs_put_price, argnums=3)(S, K, r, sigma, T)
     grad_T = jax.grad(bs_put_price, argnums=4)(S, K, r, sigma, T)
 
-    assert jnp.abs(bs_delta(S, K, r, sigma, T, "put") - grad_S) < 1e-6
+    assert jnp.abs(bs_put_delta(S, K, r, sigma, T) - grad_S) < 1e-6
     assert jnp.abs(bs_vega(S, K, r, sigma, T) - grad_sigma) < 1e-6
-    assert jnp.abs(bs_rho(S, K, r, sigma, T, "put") - grad_r) < 1e-6
-    assert jnp.abs(bs_theta(S, K, r, sigma, T, "put") + grad_T) < 1e-6
+    assert jnp.abs(bs_put_rho(S, K, r, sigma, T) - grad_r) < 1e-6
+    assert jnp.abs(bs_put_theta(S, K, r, sigma, T) + grad_T) < 1e-6
 
 
 def test_jit_and_grad_composable():

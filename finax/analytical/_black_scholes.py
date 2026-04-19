@@ -2,8 +2,6 @@ import jax
 import jax.numpy as jnp
 from jax.scipy.stats import norm
 
-jax.config.update("jax_enable_x64", True)
-
 
 def _d1_d2(S, K, r, sigma, T):
     d1 = (jnp.log(S / K) + (r + 0.5 * sigma**2) * T) / (sigma * jnp.sqrt(T))
@@ -36,54 +34,36 @@ def bs_vega(S, K, r, sigma, T):
 
 
 @jax.jit
-def _bs_delta_call(S, K, r, sigma, T):
+def bs_call_delta(S, K, r, sigma, T):
     d1, _ = _d1_d2(S, K, r, sigma, T)
     return norm.cdf(d1)
 
 
 @jax.jit
-def _bs_delta_put(S, K, r, sigma, T):
+def bs_put_delta(S, K, r, sigma, T):
     d1, _ = _d1_d2(S, K, r, sigma, T)
     return norm.cdf(d1) - 1.0
 
 
-def bs_delta(S, K, r, sigma, T, option_type: str = "call"):
-    if option_type == "call":
-        return _bs_delta_call(S, K, r, sigma, T)
-    return _bs_delta_put(S, K, r, sigma, T)
-
-
 @jax.jit
-def _bs_rho_call(S, K, r, sigma, T):
+def bs_call_rho(S, K, r, sigma, T):
     _, d2 = _d1_d2(S, K, r, sigma, T)
     return K * T * jnp.exp(-r * T) * norm.cdf(d2)
 
 
 @jax.jit
-def _bs_rho_put(S, K, r, sigma, T):
+def bs_put_rho(S, K, r, sigma, T):
     _, d2 = _d1_d2(S, K, r, sigma, T)
     return -K * T * jnp.exp(-r * T) * norm.cdf(-d2)
 
 
-def bs_rho(S, K, r, sigma, T, option_type: str = "call"):
-    if option_type == "call":
-        return _bs_rho_call(S, K, r, sigma, T)
-    return _bs_rho_put(S, K, r, sigma, T)
-
-
 @jax.jit
-def _bs_theta_call(S, K, r, sigma, T):
+def bs_call_theta(S, K, r, sigma, T):
     d1, d2 = _d1_d2(S, K, r, sigma, T)
     return -(S * norm.pdf(d1) * sigma) / (2 * jnp.sqrt(T)) - r * K * jnp.exp(-r * T) * norm.cdf(d2)
 
 
 @jax.jit
-def _bs_theta_put(S, K, r, sigma, T):
+def bs_put_theta(S, K, r, sigma, T):
     d1, d2 = _d1_d2(S, K, r, sigma, T)
     return -(S * norm.pdf(d1) * sigma) / (2 * jnp.sqrt(T)) + r * K * jnp.exp(-r * T) * norm.cdf(-d2)
-
-
-def bs_theta(S, K, r, sigma, T, option_type: str = "call"):
-    if option_type == "call":
-        return _bs_theta_call(S, K, r, sigma, T)
-    return _bs_theta_put(S, K, r, sigma, T)
