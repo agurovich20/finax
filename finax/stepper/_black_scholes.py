@@ -1,3 +1,4 @@
+import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Complex
 
@@ -120,19 +121,30 @@ class BlackScholes(BackwardStepper):
         """
         Price an option with the given payoff function.
 
+        Evaluates the payoff on S_grid, then evolves forward in τ
+        via num_steps stepper applications, compiled as a single
+        jax.lax.scan. This means the compiled trace size is
+        independent of num_steps, which matters when the method
+        is composed with jax.grad or jax.vmap over a parameter
+        grid.
+
         Arguments:
           - payoff_fn: callable S -> V at τ=0 (i.e. the terminal payoff).
             Must accept a 1D array of spot prices and return a 1D array.
           - S_grid: 1D jnp.array of spot prices. Must be a uniform grid
             in log(S) — i.e. S_grid = exp(jnp.linspace(x_min, x_max, N,
             endpoint=False)) consistent with the stepper's domain_extent.
-          - num_steps: integer number of forward-τ steps.
+          - num_steps: integer number of forward-τ steps (must be a
+            Python int, not a traced JAX value).
 
         Returns:
           - V: 1D jnp.array of option values on S_grid, shape (num_points,),
             after evolving forward in τ by num_steps * dtau.
         """
-        V = payoff_fn(S_grid)[None, :]
-        for _ in range(num_steps):
-            V = self(V)
-        return V[0]
+        V_init = payoff_fn(S_grid)[None, :]
+
+        def body(V, _):
+            return self(V), None
+
+        V_final, _ = jax.lax.scan(body, V_init, None, length=num_steps)
+        return V_final[0]

@@ -6,31 +6,6 @@ deferral benefit. This is not a full roadmap (see ROADMAP.md
 for planned features); it is a list of known imperfections in
 shipped code.
 
-## BlackScholes.price() uses a Python for-loop
-
-**File**: `finax/stepper/_black_scholes.py`
-
-**Issue**: The `price()` method iterates with a plain Python
-`for _ in range(num_steps)`. This works correctly but causes
-`jax.grad(stepper.price)` to unroll the loop at trace time,
-producing a trace linear in `num_steps`. For `num_steps=200`
-this is manageable; for parameter-grid calibration or
-backprop through long trajectories, it compiles slowly and
-may exhaust memory.
-
-**Fix**: replace the for-loop with `jax.lax.scan` over a step
-function. Rough sketch:
-
-    V_final, _ = jax.lax.scan(
-        lambda V, _: (self(V), None),
-        V_init,
-        jnp.arange(num_steps),
-    )
-
-**When to revisit**: M2 (autodiff Greeks). If Greek
-computation is noticeably slow or if trace compilation
-becomes a bottleneck, this is the first thing to fix.
-
 ## price() does not validate S_grid
 
 **File**: `finax/stepper/_black_scholes.py`
