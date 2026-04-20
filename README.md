@@ -52,6 +52,28 @@ Work in progress (see ROADMAP.md):
 - Heston and Merton jump-diffusion pricers.
 - Neural branch (Deep BSDE, PINN).
 
+## Validation
+
+finax's `BlackScholes` pricer is validated against the
+closed-form Black-Scholes formula across a range of strikes,
+maturities, and grid resolutions. See `validation/` for the
+full scripts and results.
+
+Headline spatial convergence at ATM (S_0=K=100, r=0.05,
+σ=0.2, T=1):
+
+| N    | Absolute error |
+|------|----------------|
+| 512  | 2.1e-3         |
+| 1024 | 5.4e-4         |
+| 2048 | 1.3e-4         |
+
+Error scales approximately as O(1/N²), consistent with the
+expected rate for a spectral method with a non-smooth
+(payoff-kink) initial condition on a periodic domain.
+ETDRK0 introduces no time-discretization error, so reducing
+Δτ at fixed N does not improve accuracy.
+
 ## Acknowledgments
 
 finax's spectral solver core is inspired by
