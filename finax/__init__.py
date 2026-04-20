@@ -1,4 +1,5 @@
 from finax._base_stepper import BackwardStepper
+from finax.stepper import BlackScholes
 from finax.analytical import (
     bs_call_delta,
     bs_call_price,
@@ -14,6 +15,7 @@ from finax.analytical import (
 
 __all__ = [
     "BackwardStepper",
+    "BlackScholes",
     "bs_call_price",
     "bs_put_price",
     "bs_gamma",
