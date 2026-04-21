@@ -13,6 +13,9 @@ anything.
 - `strike_grid.py` — pricing error across a moneyness × T
   grid for both calls and puts. Produces
   `strike_grid_data.csv`.
+- `greeks_grid.py` — Greek-level pricing error across a
+  moneyness × T grid for delta, gamma, vega, rho, theta.
+  Produces `greeks_grid_data.csv`.
 
 ## How to regenerate
 
@@ -20,6 +23,7 @@ From the repo root:
 
     python validation/convergence.py
     python validation/strike_grid.py
+    python validation/greeks_grid.py
 
 Both scripts print a summary to stdout and save their
 full results to CSV files in this directory. The CSVs are

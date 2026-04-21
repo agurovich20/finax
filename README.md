@@ -68,6 +68,11 @@ Headline spatial convergence at ATM (S_0=K=100, r=0.05,
 | 1024 | 5.4e-4         |
 | 2048 | 1.3e-4         |
 
+Greek-level validation: across a moneyness × T grid (5×4 = 20
+(K, T) pairs at N=1024), all five Greeks (delta, gamma, vega,
+rho, theta) match closed-form to within 0.08% relative error.
+See `validation/greeks_grid_data.csv` for full results.
+
 Error scales approximately as O(1/N²), consistent with the
 expected rate for a spectral method with a non-smooth
 (payoff-kink) initial condition on a periodic domain.
