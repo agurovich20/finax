@@ -85,25 +85,6 @@ the existing `num_spatial_dims` check.
 **When to revisit**: next time `BackwardStepper` is modified
 for any reason. Cheap fix, low urgency.
 
-## BlackScholes autodiff compatibility is untested
-
-**Files**: `finax/stepper/_black_scholes.py`, `tests/`
-
-**Issue**: `BlackScholes.price()` is written in pure JAX and
-should be compatible with `jax.grad`, `jax.jit`, and
-`jax.vmap`. However, the current test suite does not verify
-this. The library advertises differentiable Greeks as a
-headline feature, but until M2 lands, there is no test
-confirming that `jax.grad(lambda sigma: stepper.price(...))`
-actually traces and executes without error.
-
-**Fix**: M2 itself is the fix. The first M2 test should
-be a smoke test that `jax.grad(stepper.price, ...)` returns
-a finite value of the correct shape, before any test verifies
-the numerical correctness of the Greek against closed-form.
-
-**When to revisit**: M2 (autodiff Greeks).
-
 ## Float32 execution paths are untested
 
 **File**: `tests/conftest.py` (enables float64 globally)
@@ -152,3 +133,54 @@ custom subclasses for jump integrals in Merton).
 **When to revisit**: M3 (Merton jump diffusion or Heston).
 Tied to "ETDRK order=1..4 paths are untested" above — both
 gaps get closed at the same time.
+
+## _BSForAD in greeks.py duplicates BlackScholes
+
+**File**: `finax/greeks.py`
+
+**Issue**: The autodiff Greek functions (vega, rho, theta)
+use a private `_BSForAD` class that mirrors `BlackScholes`
+but skips the `if sigma <= 0: raise ValueError(...)` check.
+The check is a Python conditional on a concrete value, which
+raises `ConcretizationTypeError` when the value is a JAX
+tracer (as happens during `jax.grad`).
+
+The duplication means any future change to `BlackScholes`
+(new fields, modified linear operator, additional validation)
+must be mirrored manually in `_BSForAD`. If the two ever
+drift apart, autodiff Greeks will silently price a different
+PDE than the one users get from the public `BlackScholes`
+class.
+
+**Fix options**:
+- Option A: replace the Python `if` in BlackScholes.__init__
+  with `eqx.error_if`, which is traceable. This eliminates
+  `_BSForAD` entirely. Cleanest.
+- Option B: branch on `isinstance(sigma, (int, float))` to
+  skip the check when sigma is a tracer. Crude but local.
+
+**When to revisit**: M3 (Heston / Merton) — when adding more
+finance steppers, the same problem recurs and a unified
+solution becomes worth the effort. Implement Option A then.
+
+## Greek tolerances in tests are absolute, not relative
+
+**File**: `tests/test_greeks.py`
+
+**Issue**: The five Greek tests use absolute tolerances
+(5e-4 for delta, gamma, rho, theta; 1e-3 for vega). Because
+Greeks have very different magnitudes (delta ~ 0.6, vega ~
+38, rho ~ 53), a uniform absolute tolerance translates to
+very different relative tolerances per Greek. The current
+measurements happen to all be well within tolerance, but
+the choice obscures whether each Greek is computed to
+"comparable" accuracy.
+
+**Fix**: switch to relative tolerance, e.g.
+`abs(finax - analytical) / abs(analytical) < 1e-4`.
+Apply uniformly to all five Greeks. Adjust constants if
+needed once measurements are taken.
+
+**When to revisit**: M2.3 (parameter-grid Greek validation),
+when many measurements at varying magnitudes will make the
+case for relative tolerance more compelling.
