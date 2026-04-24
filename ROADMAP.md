@@ -17,7 +17,7 @@ Track 1: Fourier pseudo-spectral solvers for 1D and 2D PDEs.
   validated against closed-form to 1e-6.
 - [ ] M2 — autodiff Greeks (Δ, Γ, ν, ρ, Θ) validated against
   closed-form across parameter grids.
-- [ ] M3a — calibration against synthetic and real SPX option
+- [x] M3a — calibration against synthetic and real SPX option
   chains.
 - [ ] M3b — Merton jump diffusion (1D, PIDE via ETDRK).
 - [ ] M3c — Heston stochastic volatility (2D).

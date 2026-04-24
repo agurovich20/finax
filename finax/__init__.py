@@ -1,4 +1,5 @@
 from finax._base_stepper import BackwardStepper
+from finax.calibration import calibrate_iv
 from finax.greeks import delta, gamma, rho, theta, vega
 from finax.stepper import BlackScholes
 from finax.analytical import (
@@ -17,6 +18,7 @@ from finax.analytical import (
 __all__ = [
     "BackwardStepper",
     "BlackScholes",
+    "calibrate_iv",
     "delta",
     "gamma",
     "vega",

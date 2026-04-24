@@ -104,6 +104,16 @@ in float32 (e.g., catastrophic cancellation in the
 (e.g. `atol=1e-2`) in float32 to account for reduced
 precision.
 
+Specific note on calibration: users who import
+`finax.calibration` without first calling
+`jax.config.update("jax_enable_x64", True)` will silently
+run in float32, producing warnings about dtype truncation.
+Measured calibration accuracy in float32 (noisy-case MAE
+~3e-4) is acceptable but noticeably looser than float64.
+Consider either (a) enabling x64 at module import time
+inside finax.calibration, (b) documenting the requirement
+prominently, or (c) both.
+
 **When to revisit**: M2 or later. Low priority unless a
 float32 user reports a bug.
 
