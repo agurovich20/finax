@@ -1,6 +1,6 @@
 # Validation
 
-This directory contains scripts that exercise finax's
+This directory contains scripts that exercise finonax's
 BlackScholes stepper against the closed-form analytical
 pricer. Results are committed alongside the scripts so
 readers can see the accuracy of the library without running

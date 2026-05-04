@@ -1,8 +1,8 @@
 import jax
 import jax.numpy as jnp
 
-from finax import bs_call_price
-from finax.calibration import OptionChain, calibrate_iv, generate_synthetic_chain
+from finonax import bs_call_price
+from finonax.calibration import OptionChain, calibrate_iv, generate_synthetic_chain
 
 S0 = 100.0
 r = 0.05

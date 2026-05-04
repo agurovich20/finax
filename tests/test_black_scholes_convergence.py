@@ -1,8 +1,8 @@
 import pytest
 import jax.numpy as jnp
 
-from finax import BlackScholes
-from finax.analytical import bs_call_price
+from finonax import BlackScholes
+from finonax.analytical import bs_call_price
 
 
 @pytest.mark.parametrize(
@@ -56,5 +56,5 @@ def test_atm_call_convergence(N, expected_max_error):
     assert error < expected_max_error, (
         f"N={N}: error {error:.2e} exceeds "
         f"tolerance {expected_max_error:.2e}. "
-        f"finax={finax_price:.6f}, analytical={analytical_price:.6f}."
+        f"finonax={finax_price:.6f}, analytical={analytical_price:.6f}."
     )

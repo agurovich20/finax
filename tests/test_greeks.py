@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 
-from finax import BlackScholes, delta, gamma, rho, theta, vega
-from finax.analytical import (
+from finonax import BlackScholes, delta, gamma, rho, theta, vega
+from finonax.analytical import (
     bs_call_delta,
     bs_call_rho,
     bs_call_theta,
@@ -67,12 +67,12 @@ def test_delta_matches_closed_form():
     S_grid, i_atm = _make_grid()
     stepper, V = _priced_V(S_grid)
 
-    finax_delta = delta(stepper, V, S_grid, i_atm)
+    result_delta = delta(stepper, V, S_grid, i_atm)
     analytical = float(bs_call_delta(S0, K, r_val, sigma_val, T_val))
 
-    assert abs(finax_delta - analytical) < ATOL, (
-        f"delta: finax={finax_delta:.6f}, analytical={analytical:.6f}, "
-        f"error={abs(finax_delta - analytical):.2e}"
+    assert abs(result_delta - analytical) < ATOL, (
+        f"delta: finonax={result_delta:.6f}, analytical={analytical:.6f}, "
+        f"error={abs(result_delta - analytical):.2e}"
     )
 
 
@@ -84,7 +84,7 @@ def test_gamma_matches_closed_form():
     analytical = float(bs_gamma(S0, K, r_val, sigma_val, T_val))
 
     assert abs(finax_gamma - analytical) < ATOL, (
-        f"gamma: finax={finax_gamma:.6f}, analytical={analytical:.6f}, "
+        f"gamma: finonax={finax_gamma:.6f}, analytical={analytical:.6f}, "
         f"error={abs(finax_gamma - analytical):.2e}"
     )
 
@@ -100,7 +100,7 @@ def test_vega_matches_closed_form():
     analytical = float(bs_vega(S0, K, r_val, sigma_val, T_val))
 
     assert abs(finax_vega - analytical) < ATOL_VEGA, (
-        f"vega: finax={finax_vega:.6f}, analytical={analytical:.6f}, "
+        f"vega: finonax={finax_vega:.6f}, analytical={analytical:.6f}, "
         f"error={abs(finax_vega - analytical):.2e}"
     )
 
@@ -116,7 +116,7 @@ def test_rho_matches_closed_form():
     analytical = float(bs_call_rho(S0, K, r_val, sigma_val, T_val))
 
     assert abs(finax_rho - analytical) < ATOL, (
-        f"rho: finax={finax_rho:.6f}, analytical={analytical:.6f}, "
+        f"rho: finonax={finax_rho:.6f}, analytical={analytical:.6f}, "
         f"error={abs(finax_rho - analytical):.2e}"
     )
 
@@ -132,6 +132,6 @@ def test_theta_matches_closed_form():
     analytical = float(bs_call_theta(S0, K, r_val, sigma_val, T_val))
 
     assert abs(finax_theta - analytical) < ATOL, (
-        f"theta: finax={finax_theta:.6f}, analytical={analytical:.6f}, "
+        f"theta: finonax={finax_theta:.6f}, analytical={analytical:.6f}, "
         f"error={abs(finax_theta - analytical):.2e}"
     )

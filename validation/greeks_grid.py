@@ -3,7 +3,7 @@ Greek-level pricing error across a moneyness x T grid.
 
 Evaluates all five Greeks (delta, gamma, vega, rho, theta) for European
 calls at S0=100 across 5 moneyness x 4 maturity combinations, comparing
-each to the closed-form result from finax.analytical.
+each to the closed-form result from finonax.analytical.
 
 Run from the repo root:
     python validation/greeks_grid.py
@@ -17,8 +17,8 @@ jax.config.update("jax_enable_x64", True)
 
 import jax.numpy as jnp
 
-from finax import BlackScholes, delta, gamma, vega, rho, theta
-from finax.analytical import (
+from finonax import BlackScholes, delta, gamma, vega, rho, theta
+from finonax.analytical import (
     bs_call_delta,
     bs_gamma,
     bs_vega,
@@ -104,7 +104,7 @@ for T in T_VALUES:
                 "abs_error": abs_err,
                 "rel_error": rel_err,
             })
-            print(f"           {greek_name:<7s}  finax={fv:>12.6f}  "
+            print(f"           {greek_name:<7s}  finonax={fv:>12.6f}  "
                   f"ref={av:>12.6f}  abs={abs_err:.2e}  rel={rel_err:.2e}")
 
 # Save CSV

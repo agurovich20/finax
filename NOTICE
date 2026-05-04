@@ -1,4 +1,4 @@
-finax
+finonax
 Copyright (c) 2026 Ari Gurovich
 
 This product includes software derived from the exponax project
@@ -28,17 +28,17 @@ MIT License:
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     OTHER DEALINGS IN THE SOFTWARE.
 
-The following files in finax are derived from exponax:
+The following files in finonax are derived from exponax:
 
-  - finax/_spectral.py
-  - finax/nonlin_fun/__init__.py
-  - finax/etdrk/_base_etdrk.py
-  - finax/etdrk/_etdrk_0.py
-  - finax/etdrk/_etdrk_1.py
-  - finax/etdrk/_etdrk_2.py
-  - finax/etdrk/_etdrk_3.py
-  - finax/etdrk/_etdrk_4.py
-  - finax/etdrk/_utils.py
+  - finonax/_spectral.py
+  - finonax/nonlin_fun/__init__.py
+  - finonax/etdrk/_base_etdrk.py
+  - finonax/etdrk/_etdrk_0.py
+  - finonax/etdrk/_etdrk_1.py
+  - finonax/etdrk/_etdrk_2.py
+  - finonax/etdrk/_etdrk_3.py
+  - finonax/etdrk/_etdrk_4.py
+  - finonax/etdrk/_utils.py
 
 The exponax project is itself inspired by the spinX module of
 Chebfun and cites the following works for numerical methods:

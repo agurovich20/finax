@@ -1,9 +1,9 @@
 import jax
 import jax.numpy as jnp
 
-from finax._base_stepper import BackwardStepper
-from finax._spectral import build_derivative_operator, fft, ifft
-from finax.nonlin_fun import BaseNonlinearFun
+from finonax._base_stepper import BackwardStepper
+from finonax._spectral import build_derivative_operator, fft, ifft
+from finonax.nonlin_fun import BaseNonlinearFun
 
 
 # ---- Private helpers for autodiff Greeks ----
@@ -152,7 +152,7 @@ def theta(stepper_factory, payoff_fn, S_grid, num_steps, i, *, sigma, r, T):
     """Compute -∂V/∂T via autodiff through the PDE stepper.
 
     Returns theta in the trader convention: theta = -∂V/∂T (time decay,
-    negative for long options), matching the convention in finax.analytical.
+    negative for long options), matching the convention in finonax.analytical.
 
     Arguments: same as vega, differentiating with respect to T.
 

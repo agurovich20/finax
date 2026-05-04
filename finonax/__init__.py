@@ -1,8 +1,8 @@
-from finax._base_stepper import BackwardStepper
-from finax.calibration import calibrate_iv
-from finax.greeks import delta, gamma, rho, theta, vega
-from finax.stepper import BlackScholes
-from finax.analytical import (
+from finonax._base_stepper import BackwardStepper
+from finonax.calibration import calibrate_iv
+from finonax.greeks import delta, gamma, rho, theta, vega
+from finonax.stepper import BlackScholes, Merton
+from finonax.analytical import (
     bs_call_delta,
     bs_call_price,
     bs_call_rho,
@@ -13,11 +13,14 @@ from finax.analytical import (
     bs_put_rho,
     bs_put_theta,
     bs_vega,
+    merton_call_price,
+    merton_put_price,
 )
 
 __all__ = [
     "BackwardStepper",
     "BlackScholes",
+    "Merton",
     "calibrate_iv",
     "delta",
     "gamma",
@@ -34,4 +37,6 @@ __all__ = [
     "bs_put_rho",
     "bs_call_theta",
     "bs_put_theta",
+    "merton_call_price",
+    "merton_put_price",
 ]

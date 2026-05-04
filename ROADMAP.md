@@ -1,6 +1,6 @@
-# finax roadmap
+# finonax roadmap
 
-finax is under active development. This roadmap reflects the
+finonax is under active development. This roadmap reflects the
 planned build order; scope and timing will shift as the library
 matures.
 
@@ -19,7 +19,9 @@ Track 1: Fourier pseudo-spectral solvers for 1D and 2D PDEs.
   closed-form across parameter grids.
 - [x] M3a — calibration against synthetic and real SPX option
   chains.
-- [ ] M3b — Merton jump diffusion (1D, PIDE via ETDRK).
+- [x] M3b — Merton jump diffusion (1D, PIDE via ETDRK).
+  Stepper, analytical series, and convergence validation complete.
+  Calibration to market data (M3b.3) is deferred to a later prompt.
 - [ ] M3c — Heston stochastic volatility (2D).
 - [ ] M3d — COS method pricer for European and American options.
 
@@ -43,5 +45,5 @@ Above 2D, the curse of dimensionality kills grid-based methods —
 a 100-asset basket cannot be discretized on a Cartesian grid.
 Neural methods (Deep BSDE, PINN) parameterize the solution
 directly rather than the state space, scaling to tens or
-hundreds of dimensions. finax aims to include both and treat
+hundreds of dimensions. finonax aims to include both and treat
 them as complementary tools for different regimes.

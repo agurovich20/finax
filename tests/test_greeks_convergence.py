@@ -13,8 +13,8 @@ Uses relative tolerance throughout; see KNOWN_ISSUES.md for context.
 import pytest
 import jax.numpy as jnp
 
-from finax import BlackScholes, delta, gamma, vega, rho, theta
-from finax.analytical import (
+from finonax import BlackScholes, delta, gamma, vega, rho, theta
+from finonax.analytical import (
     bs_call_delta,
     bs_gamma,
     bs_vega,
@@ -72,33 +72,33 @@ def test_greek_accuracy_across_parameter_grid(greek_name):
                 )
 
             if greek_name == "delta":
-                finax_val = delta(stepper, V, S_grid, i_s0)
+                result = delta(stepper, V, S_grid, i_s0)
                 analytical = float(bs_call_delta(S0, K, r_val, sigma_val, T))
             elif greek_name == "gamma":
-                finax_val = gamma(stepper, V, S_grid, i_s0)
+                result = gamma(stepper, V, S_grid, i_s0)
                 analytical = float(bs_gamma(S0, K, r_val, sigma_val, T))
             elif greek_name == "vega":
-                finax_val = vega(
+                result = vega(
                     make_stepper, payoff_fn, S_grid, num_steps, i_s0,
                     sigma=sigma_val, r=r_val, T=T,
                 )
                 analytical = float(bs_vega(S0, K, r_val, sigma_val, T))
             elif greek_name == "rho":
-                finax_val = rho(
+                result = rho(
                     make_stepper, payoff_fn, S_grid, num_steps, i_s0,
                     sigma=sigma_val, r=r_val, T=T,
                 )
                 analytical = float(bs_call_rho(S0, K, r_val, sigma_val, T))
             else:
-                finax_val = theta(
+                result = theta(
                     make_stepper, payoff_fn, S_grid, num_steps, i_s0,
                     sigma=sigma_val, r=r_val, T=T,
                 )
                 analytical = float(bs_call_theta(S0, K, r_val, sigma_val, T))
 
-            rel_err = abs(finax_val - analytical) / abs(analytical)
+            rel_err = abs(result - analytical) / abs(analytical)
             assert rel_err < RTOL, (
                 f"{greek_name}: m={m}, T={T}: "
-                f"finax={finax_val:.6f}, analytical={analytical:.6f}, "
+                f"finonax={result:.6f}, analytical={analytical:.6f}, "
                 f"rel_error={rel_err:.2e} >= {RTOL:.1e}"
             )

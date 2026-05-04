@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 
-from finax.etdrk import ETDRK0
-from finax.etdrk._utils import roots_of_unity
+from finonax.etdrk import ETDRK0
+from finonax.etdrk._utils import roots_of_unity
 
 
 def test_etdrk0_pure_exponential_decay():

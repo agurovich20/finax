@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Complex
 
-from finax.nonlin_fun import BaseNonlinearFun
+from finonax.nonlin_fun import BaseNonlinearFun
 from ._base_etdrk import BaseETDRK
 from ._utils import roots_of_unity
 

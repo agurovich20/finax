@@ -4,7 +4,7 @@ import jax
 import jax.numpy as jnp
 import optax
 
-from finax.analytical._black_scholes import bs_call_price
+from finonax.analytical._black_scholes import bs_call_price
 
 
 class OptionChain(NamedTuple):

@@ -8,7 +8,7 @@ shipped code.
 
 ## price() does not validate S_grid
 
-**File**: `finax/stepper/_black_scholes.py`
+**File**: `finonax/stepper/_black_scholes.py`
 
 **Issue**: `price()` accepts an `S_grid` argument and assumes
 it is uniform in `log(S)` and consistent with the stepper's
@@ -28,19 +28,19 @@ silently wrong result.
 (probably M2 or M3). Decide between options then based on
 how users are actually calling it.
 
-## ETDRK order=1..4 paths are untested in finax
+## ETDRK order=1..4 paths are untested in finonax
 
-**Files**: `finax/etdrk/_etdrk_1.py` through `_etdrk_4.py`.
+**Files**: `finonax/etdrk/_etdrk_1.py` through `_etdrk_4.py`.
 
 **Issue**: These integrators were ported verbatim from exponax
 (where they are exercised by many nonlinear PDE tests). In
-finax, only ETDRK0 is currently used (by `BlackScholes`).
-ETDRK1-4 paths have no finax-level tests. They are probably
+finonax, only ETDRK0 is currently used (by `BlackScholes`).
+ETDRK1-4 paths have no finonax-level tests. They are probably
 correct — the ports are byte-identical to upstream — but
 "probably correct" and "verified in this repo" are not the
 same.
 
-**Fix**: once a finax stepper uses `order >= 1` (likely
+**Fix**: once a finonax stepper uses `order >= 1` (likely
 Merton jump diffusion in M3, which requires the integral
 term to be handled as a nonlinear function), add tests that
 exercise that stepper and by extension the higher-order
@@ -50,7 +50,7 @@ ETDRK machinery.
 
 ## num_points is not required to be a power of 2
 
-**File**: `finax/_base_stepper.py`
+**File**: `finonax/_base_stepper.py`
 
 **Issue**: `BackwardStepper.__init__` accepts any positive
 integer for `num_points`. FFT performance is dramatically
@@ -69,7 +69,7 @@ performance starts mattering.
 
 ## dtau is not validated
 
-**File**: `finax/_base_stepper.py`
+**File**: `finonax/_base_stepper.py`
 
 **Issue**: `BackwardStepper.__init__` does not check that
 `dtau > 0`. Passing `dtau=0` makes `_exp_term = 1` and the
@@ -105,13 +105,13 @@ in float32 (e.g., catastrophic cancellation in the
 precision.
 
 Specific note on calibration: users who import
-`finax.calibration` without first calling
+`finonax.calibration` without first calling
 `jax.config.update("jax_enable_x64", True)` will silently
 run in float32, producing warnings about dtype truncation.
 Measured calibration accuracy in float32 (noisy-case MAE
 ~3e-4) is acceptable but noticeably looser than float64.
 Consider either (a) enabling x64 at module import time
-inside finax.calibration, (b) documenting the requirement
+inside finonax.calibration, (b) documenting the requirement
 prominently, or (c) both.
 
 **When to revisit**: M2 or later. Low priority unless a
@@ -119,7 +119,7 @@ float32 user reports a bug.
 
 ## BaseNonlinearFun is a stub without concrete implementations
 
-**File**: `finax/nonlin_fun/__init__.py`
+**File**: `finonax/nonlin_fun/__init__.py`
 
 **Issue**: `BaseNonlinearFun` is an abstract base class with
 a minimal `__init__` and an abstract `__call__`. Exponax's
@@ -146,7 +146,7 @@ gaps get closed at the same time.
 
 ## _BSForAD in greeks.py duplicates BlackScholes
 
-**File**: `finax/greeks.py`
+**File**: `finonax/greeks.py`
 
 **Issue**: The autodiff Greek functions (vega, rho, theta)
 use a private `_BSForAD` class that mirrors `BlackScholes`
@@ -187,7 +187,7 @@ the choice obscures whether each Greek is computed to
 "comparable" accuracy.
 
 **Fix**: switch to relative tolerance, e.g.
-`abs(finax - analytical) / abs(analytical) < 1e-4`.
+`abs(finonax - analytical) / abs(analytical) < 1e-4`.
 Apply uniformly to all five Greeks. Adjust constants if
 needed once measurements are taken.
 

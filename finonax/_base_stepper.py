@@ -3,15 +3,15 @@ from abc import ABC, abstractmethod
 import equinox as eqx
 from jaxtyping import Array, Complex, Float
 
-from finax._spectral import (
+from finonax._spectral import (
     build_derivative_operator,
     fft,
     ifft,
     spatial_shape,
     wavenumber_shape,
 )
-from finax.etdrk import ETDRK0, ETDRK1, ETDRK2, ETDRK3, ETDRK4, BaseETDRK
-from finax.nonlin_fun import BaseNonlinearFun
+from finonax.etdrk import ETDRK0, ETDRK1, ETDRK2, ETDRK3, ETDRK4, BaseETDRK
+from finonax.nonlin_fun import BaseNonlinearFun
 
 
 class BackwardStepper(eqx.Module, ABC):
@@ -48,12 +48,12 @@ class BackwardStepper(eqx.Module, ABC):
 
     !!! note "Spatial dimensionality"
 
-        finax's spectral core supports 1D and 2D problems — which
+        finonax's spectral core supports 1D and 2D problems — which
         covers Black-Scholes, Merton jump diffusion, and Heston
         stochastic volatility. Higher-dimensional finance PDEs such
         as basket options on many underlyings are subject to the
         curse of dimensionality and will be addressed in a future
-        neural branch of finax (Deep BSDE, PINN, Fourier Neural
+        neural branch of finonax (Deep BSDE, PINN, Fourier Neural
         Operators). See ROADMAP.md. Passing num_spatial_dims > 2
         raises ValueError.
     """
@@ -107,7 +107,7 @@ class BackwardStepper(eqx.Module, ABC):
         **Arguments:**
 
         - `num_spatial_dims`: The number of spatial dimensions. Must be 1 or 2;
-            finax's spectral core does not support higher-dimensional PDEs (see
+            finonax's spectral core does not support higher-dimensional PDEs (see
             ROADMAP.md for the planned neural branch).
         - `domain_extent`: The size of the domain `L`; in higher dimensions
             the domain is assumed to be a scaled hypercube `Ω = (0, L)ᵈ`.
@@ -141,7 +141,7 @@ class BackwardStepper(eqx.Module, ABC):
         """
         if num_spatial_dims not in (1, 2):
             raise ValueError(
-                f"finax's spectral core supports num_spatial_dims in "
+                f"finonax's spectral core supports num_spatial_dims in "
                 f"{{1, 2}} only, got {num_spatial_dims}. "
                 f"See ROADMAP.md for the planned neural branch that "
                 f"handles higher-dimensional finance PDEs."

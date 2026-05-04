@@ -1,8 +1,8 @@
 import pytest
 import jax.numpy as jnp
 
-from finax import BackwardStepper
-from finax.nonlin_fun import BaseNonlinearFun
+from finonax import BackwardStepper
+from finonax.nonlin_fun import BaseNonlinearFun
 
 
 class ZeroNonlin(BaseNonlinearFun):

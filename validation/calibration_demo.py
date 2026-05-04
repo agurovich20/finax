@@ -12,7 +12,7 @@ import time
 import jax
 import jax.numpy as jnp
 
-from finax.calibration import calibrate_iv, generate_synthetic_chain
+from finonax.calibration import calibrate_iv, generate_synthetic_chain
 
 jax.config.update("jax_enable_x64", True)
 

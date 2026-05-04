@@ -1,9 +1,9 @@
 import pytest
 import jax.numpy as jnp
 
-from finax import BlackScholes
-from finax.analytical import bs_call_price, bs_put_price
-from finax._spectral import build_derivative_operator
+from finonax import BlackScholes
+from finonax.analytical import bs_call_price, bs_put_price
+from finonax._spectral import build_derivative_operator
 
 
 def _make_grid(N=2048, S0=100.0, x_half_extent=5.0):

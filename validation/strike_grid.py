@@ -13,8 +13,8 @@ jax.config.update("jax_enable_x64", True)
 
 import jax.numpy as jnp
 
-from finax import BlackScholes
-from finax.analytical import bs_call_price, bs_put_price
+from finonax import BlackScholes
+from finonax.analytical import bs_call_price, bs_put_price
 
 MONEYNESS_VALUES = [0.8, 0.9, 1.0, 1.1, 1.2]
 T_VALUES = [0.25, 0.5, 1.0, 2.0]
@@ -75,7 +75,7 @@ for T in T_VALUES:
             })
             done += 1
             print(f"  [{done:2d}/{total}]  {option_type:4s}  m={m:.1f}  K={K:6.1f}  "
-                  f"T={T:.2f}  finax={finax_price:.4f}  ref={analytical_price:.4f}  "
+                  f"T={T:.2f}  finonax={finax_price:.4f}  ref={analytical_price:.4f}  "
                   f"abs={abs_error:.2e}  rel={rel_error:.2e}")
 
 # Save CSV
@@ -95,7 +95,7 @@ print("=" * 88)
 print("Strike grid results (N=1024, num_steps=200, x_half_extent=3.0)")
 print("=" * 88)
 print(f"{'type':4s}  {'m':4s}  {'K':6s}  {'T':4s}  "
-      f"{'finax':>10s}  {'ref':>10s}  {'abs_err':>9s}  {'rel_err':>9s}")
+      f"{'finonax':>10s}  {'ref':>10s}  {'abs_err':>9s}  {'rel_err':>9s}")
 print("-" * 88)
 
 finite_rel = [r["rel_error"] for r in rows if not math.isnan(r["rel_error"])]

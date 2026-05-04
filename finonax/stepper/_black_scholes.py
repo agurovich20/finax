@@ -2,8 +2,8 @@ import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Complex
 
-from finax._base_stepper import BackwardStepper
-from finax.nonlin_fun import BaseNonlinearFun
+from finonax._base_stepper import BackwardStepper
+from finonax.nonlin_fun import BaseNonlinearFun
 
 
 class _ZeroNonlin(BaseNonlinearFun):

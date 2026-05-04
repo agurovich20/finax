@@ -13,8 +13,8 @@ jax.config.update("jax_enable_x64", True)
 
 import jax.numpy as jnp
 
-from finax import BlackScholes
-from finax.analytical import bs_call_price
+from finonax import BlackScholes
+from finonax.analytical import bs_call_price
 
 N_VALUES = [128, 256, 512, 1024, 2048]
 NUM_STEPS_VALUES = [50, 100, 200, 400]
@@ -57,7 +57,7 @@ for N in N_VALUES:
         rows.append({"N": N, "num_steps": num_steps, "dtau": dtau, "error": err})
         done += 1
         print(f"  [{done:2d}/{total}]  N={N:4d}  num_steps={num_steps:3d}  "
-              f"dtau={dtau:.5f}  finax={finax_price:.6f}  error={err:.3e}")
+              f"dtau={dtau:.5f}  finonax={finax_price:.6f}  error={err:.3e}")
 
 # Save CSV
 out_dir = os.path.dirname(os.path.abspath(__file__))

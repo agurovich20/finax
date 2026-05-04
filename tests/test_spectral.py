@@ -1,7 +1,7 @@
 import numpy as np
 import jax.numpy as jnp
 
-from finax._spectral import (
+from finonax._spectral import (
     build_derivative_operator,
     fft,
     ifft,

@@ -1,4 +1,4 @@
-# finax
+# finonax
 
 Differentiable Fourier-spectral solvers for finance PDEs, in JAX.
 
@@ -6,7 +6,7 @@ Differentiable Fourier-spectral solvers for finance PDEs, in JAX.
 
 ## What this is
 
-finax extends the spectral PDE machinery of Exponax to backward-in-time
+finonax extends the spectral PDE machinery of Exponax to backward-in-time
 finance PDEs. The goal is a small library where:
 
 - You specify a PDE (Black-Scholes, Heston, Merton) once and get
@@ -15,7 +15,7 @@ finance PDEs. The goal is a small library where:
   construction.
 - Everything is JIT-compilable and GPU-ready.
 
-finax is organized into two intended tracks:
+finonax is organized into two intended tracks:
 
 - A **spectral core** for 1D and 2D problems (Black-Scholes,
   Merton jump diffusion, Heston stochastic volatility), inspired by exponax.
@@ -25,11 +25,11 @@ finax is organized into two intended tracks:
 
 ## Installation
 
-finax is not yet published to PyPI. To install the development version:
+finonax is not yet published to PyPI. To install the development version:
 
 ```
 git clone <this-repo-url>
-cd finax
+cd finonax
 pip install -e ".[dev]"
 ```
 
@@ -54,7 +54,7 @@ Work in progress (see ROADMAP.md):
 
 ## Validation
 
-finax's `BlackScholes` pricer is validated against the
+finonax's `BlackScholes` pricer is validated against the
 closed-form Black-Scholes formula across a range of strikes,
 maturities, and grid resolutions. See `validation/` for the
 full scripts and results.
@@ -81,7 +81,7 @@ ETDRK0 introduces no time-discretization error, so reducing
 
 ## Calibration
 
-finax supports gradient-based calibration of option pricing
+finonax supports gradient-based calibration of option pricing
 models to market data using `optax` and `jax.grad`. The
 calibrator minimizes mean squared price error across an
 option chain; each implied volatility is parameterized via
@@ -112,7 +112,7 @@ demonstration.
 
 ## Acknowledgments
 
-finax's spectral solver core is inspired by
+finonax's spectral solver core is inspired by
 [exponax](https://github.com/Ceyron/exponax) by Felix Köhler, under the MIT
 License. See `NOTICE` for the full list of derived files and citations.
 

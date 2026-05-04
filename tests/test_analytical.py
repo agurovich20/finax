@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 import pytest
 
-from finax.analytical import (
+from finonax.analytical import (
     bs_call_price,
     bs_put_price,
     bs_gamma,
