@@ -20,8 +20,8 @@ Track 1: Fourier pseudo-spectral solvers for 1D and 2D PDEs.
 - [x] M3a — calibration against synthetic and real SPX option
   chains.
 - [x] M3b — Merton jump diffusion (1D, PIDE via ETDRK).
-  Stepper, analytical series, and convergence validation complete.
-  Calibration to market data (M3b.3) is deferred to a later prompt.
+  Stepper, analytical series, autodiff Greeks, and convergence validation complete.
+  - [x] **M3b.4** — Merton calibration (fit $\sigma, \lambda, \mu_J, \sigma_J$ to a smile).
 - [ ] M3c — Heston stochastic volatility (2D).
 - [ ] M3d — COS method pricer for European and American options.
 

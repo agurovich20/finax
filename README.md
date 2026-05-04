@@ -18,7 +18,7 @@ Closed-form analytical references for both models, used as validation oracles fo
 
 Gradient-based calibration of implied-volatility surfaces using `optax`, demonstrated on synthetic and noisy option chains.
 
-A regression test suite with 53 tests covering analytical correctness, spectral convergence, Greek accuracy across parameter grids, calibration recovery, and structural invariants of the linear operators.
+A regression test suite with 57 tests covering analytical correctness, spectral convergence, Greek accuracy across parameter grids, calibration recovery, and structural invariants of the linear operators.
 
 ## Why a new library
 
@@ -228,7 +228,9 @@ with $\sigma_i$ parameterized via softplus to ensure positivity ($\sigma = \log(
 
 On a 36-contract synthetic chain (9 strikes by 4 maturities) with a known smile surface, finonax recovers the implied volatilities to within 1.3e-13 absolute error on noise-free prices (machine precision in float64), and to 3e-4 mean absolute error with 9e-4 worst-case on prices perturbed by 1% Gaussian noise. That is 3 to 9 basis points in IV terms, well below typical SPX bid-ask spreads of 50 to 200 bp.
 
-500 Adam iterations complete in roughly 4 seconds on a single GPU including JIT compilation. The framework generalizes unchanged to Heston and Merton models. The only difference is that those models have no closed-form IV inversion, so gradient-based calibration is the only practical approach. (Merton calibration is a planned milestone.)
+500 Adam iterations complete in roughly 4 seconds on a single GPU including JIT compilation. The framework generalizes unchanged to Heston and Merton models. The only difference is that those models have no closed-form IV inversion, so gradient-based calibration is the only practical approach.
+
+finonax also calibrates the Merton jump-diffusion model, fitting four shared parameters $(\sigma, \lambda, \mu_J, \sigma_J)$ to the full option surface simultaneously. The same gradient-descent infrastructure is reused: a softplus-parameterized loss on price MSE, optimized with Adam via `jax.value_and_grad`. Because the Merton landscape is non-convex with multiple local minima, calibration begins with a coarse 3-D forward-pass grid over $(\lambda, \mu_J, \sigma_J)$ to identify the correct basin, followed by 1000 Adam steps. On a 36-contract synthetic chain with 1% Gaussian price noise, this recovers all four parameters to within 3% relative error and achieves a mean absolute price error of 7.5e-3.
 
 ## Validation
 
@@ -244,9 +246,11 @@ All accuracy claims in this README are backed by committed CSV files under `vali
 
 `validation/merton_convergence.py` runs the convergence study for the Merton stepper.
 
+`validation/merton_calibration_demo.py` calibrates the Merton model to a 36-contract synthetic chain with 1% Gaussian price noise. The script reports per-parameter relative errors and per-contract price errors, saving results to `validation/merton_calibration_demo_data.csv`.
+
 Regression tests in `tests/` codify these tolerances with 3 to 4 times safety margin so that future changes degrading accuracy fail CI.
 
-The full test suite is 53 tests passing as of M3b.3:
+The full test suite is 57 tests passing as of M3b.4:
 
 | Test file                             | Count | Coverage                                        |
 |---------------------------------------|-------|-------------------------------------------------|
@@ -262,7 +266,8 @@ The full test suite is 53 tests passing as of M3b.3:
 | `test_merton_analytical.py`           | 4     | Closed-form Merton series                       |
 | `test_merton_stepper.py`              | 4     | Merton stepper at canonical parameters          |
 | `test_merton_greeks.py`               | 5     | Merton Greeks via FD baselines                  |
-| Total                                 | 53    |                                                 |
+| `test_merton_calibration.py`          | 4     | Merton calibration: roundtrip, param/price recovery, noise robustness |
+| Total                                 | 57    |                                                 |
 
 ## Architecture
 
