@@ -1,61 +1,8 @@
 import jax
 import jax.numpy as jnp
 
-from finonax._base_stepper import BackwardStepper
 from finonax._spectral import build_derivative_operator, fft, ifft
-from finonax.nonlin_fun import BaseNonlinearFun
-
-
-# ---- Private helpers for autodiff Greeks ----
-#
-# BlackScholes.__init__ contains `if sigma <= 0: raise ValueError(...)`.
-# When JAX traces through a grad computation, sigma is an abstract tracer;
-# Python `if` on a tracer raises ConcretizationTypeError. _BSForAD is
-# identical to BlackScholes minus that check, used only inside vega/rho/theta.
-
-class _ZeroNonlin(BaseNonlinearFun):
-    def __call__(self, u_hat):
-        return jnp.zeros_like(u_hat)
-
-
-class _BSForAD(BackwardStepper):
-    sigma: float
-    r: float
-
-    def __init__(self, domain_extent, num_points, dtau, *, sigma, r):
-        self.sigma = sigma
-        self.r = r
-        super().__init__(
-            num_spatial_dims=1,
-            domain_extent=domain_extent,
-            num_points=num_points,
-            dtau=dtau,
-            num_channels=1,
-            order=0,
-        )
-
-    def _build_linear_operator(self, D):
-        return (
-            0.5 * self.sigma**2 * D**2
-            + (self.r - 0.5 * self.sigma**2) * D
-            - self.r
-        )
-
-    def _build_nonlinear_fun(self, D):
-        return _ZeroNonlin(
-            num_spatial_dims=self.num_spatial_dims,
-            num_points=self.num_points,
-            dealiasing_fraction=1.0,
-        )
-
-    def price(self, payoff_fn, S_grid, num_steps):
-        V_init = payoff_fn(S_grid)[None, :]
-
-        def body(V, _):
-            return self(V), None
-
-        V_final, _ = jax.lax.scan(body, V_init, None, length=num_steps)
-        return V_final[0]
+from finonax.stepper import BlackScholes
 
 
 # ---- Spectral Greeks (delta, gamma) ----
@@ -124,7 +71,7 @@ def vega(stepper_factory, payoff_fn, S_grid, num_steps, i, *, sigma, r, T):
     domain_extent, N = _ref.domain_extent, _ref.num_points
 
     def price_at_i(s):
-        stepper = _BSForAD(domain_extent, N, T / num_steps, sigma=s, r=r)
+        stepper = BlackScholes(domain_extent, N, T / num_steps, sigma=s, r=r)
         return stepper.price(payoff_fn, S_grid, num_steps)[i]
 
     return float(jax.grad(price_at_i)(float(sigma)))
@@ -142,7 +89,7 @@ def rho(stepper_factory, payoff_fn, S_grid, num_steps, i, *, sigma, r, T):
     domain_extent, N = _ref.domain_extent, _ref.num_points
 
     def price_at_i(r_val):
-        stepper = _BSForAD(domain_extent, N, T / num_steps, sigma=sigma, r=r_val)
+        stepper = BlackScholes(domain_extent, N, T / num_steps, sigma=sigma, r=r_val)
         return stepper.price(payoff_fn, S_grid, num_steps)[i]
 
     return float(jax.grad(price_at_i)(float(r)))
@@ -163,7 +110,7 @@ def theta(stepper_factory, payoff_fn, S_grid, num_steps, i, *, sigma, r, T):
     domain_extent, N = _ref.domain_extent, _ref.num_points
 
     def price_at_i(T_val):
-        stepper = _BSForAD(domain_extent, N, T_val / num_steps, sigma=sigma, r=r)
+        stepper = BlackScholes(domain_extent, N, T_val / num_steps, sigma=sigma, r=r)
         return stepper.price(payoff_fn, S_grid, num_steps)[i]
 
     return float(-jax.grad(price_at_i)(float(T)))

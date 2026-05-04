@@ -1,3 +1,4 @@
+import equinox as eqx
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Complex
@@ -91,12 +92,18 @@ class Merton(BackwardStepper):
         num_circle_points: int = 16,
         circle_radius: float = 1.0,
     ):
-        if sigma <= 0:
-            raise ValueError(f"sigma must be positive, got {sigma}")
-        if lambda_jump < 0:
-            raise ValueError(f"lambda_jump must be non-negative, got {lambda_jump}")
-        if sigma_jump <= 0:
-            raise ValueError(f"sigma_jump must be positive, got {sigma_jump}")
+        sigma = eqx.error_if(
+            sigma, sigma <= 0,
+            "sigma must be positive"
+        )
+        lambda_jump = eqx.error_if(
+            lambda_jump, lambda_jump < 0,
+            "lambda_jump must be non-negative"
+        )
+        sigma_jump = eqx.error_if(
+            sigma_jump, sigma_jump <= 0,
+            "sigma_jump must be positive"
+        )
 
         self.sigma = sigma
         self.r = r

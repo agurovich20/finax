@@ -144,35 +144,6 @@ custom subclasses for jump integrals in Merton).
 Tied to "ETDRK order=1..4 paths are untested" above — both
 gaps get closed at the same time.
 
-## _BSForAD in greeks.py duplicates BlackScholes
-
-**File**: `finonax/greeks.py`
-
-**Issue**: The autodiff Greek functions (vega, rho, theta)
-use a private `_BSForAD` class that mirrors `BlackScholes`
-but skips the `if sigma <= 0: raise ValueError(...)` check.
-The check is a Python conditional on a concrete value, which
-raises `ConcretizationTypeError` when the value is a JAX
-tracer (as happens during `jax.grad`).
-
-The duplication means any future change to `BlackScholes`
-(new fields, modified linear operator, additional validation)
-must be mirrored manually in `_BSForAD`. If the two ever
-drift apart, autodiff Greeks will silently price a different
-PDE than the one users get from the public `BlackScholes`
-class.
-
-**Fix options**:
-- Option A: replace the Python `if` in BlackScholes.__init__
-  with `eqx.error_if`, which is traceable. This eliminates
-  `_BSForAD` entirely. Cleanest.
-- Option B: branch on `isinstance(sigma, (int, float))` to
-  skip the check when sigma is a tracer. Crude but local.
-
-**When to revisit**: M3 (Heston / Merton) — when adding more
-finance steppers, the same problem recurs and a unified
-solution becomes worth the effort. Implement Option A then.
-
 ## Greek tolerances in tests are absolute, not relative
 
 **File**: `tests/test_greeks.py`

@@ -56,9 +56,9 @@ def test_bs_matches_closed_form_put():
 
 
 def test_bs_sigma_validation():
-    with pytest.raises(ValueError, match="sigma must be positive"):
+    with pytest.raises((ValueError, RuntimeError), match="sigma must be positive"):
         BlackScholes(10.0, 64, 0.01, sigma=0.0, r=0.05)
-    with pytest.raises(ValueError, match="sigma must be positive"):
+    with pytest.raises((ValueError, RuntimeError), match="sigma must be positive"):
         BlackScholes(10.0, 64, 0.01, sigma=-0.1, r=0.05)
 
 

@@ -1,3 +1,4 @@
+import equinox as eqx
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Complex
@@ -82,8 +83,11 @@ class BlackScholes(BackwardStepper):
         num_circle_points: int = 16,
         circle_radius: float = 1.0,
     ):
-        if sigma <= 0:
-            raise ValueError(f"sigma must be positive, got {sigma}")
+        sigma = eqx.error_if(
+            sigma,
+            sigma <= 0,
+            "sigma must be positive (got non-positive value)",
+        )
 
         self.sigma = sigma
         self.r = r
