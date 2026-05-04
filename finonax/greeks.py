@@ -2,7 +2,6 @@ import jax
 import jax.numpy as jnp
 
 from finonax._spectral import build_derivative_operator, fft, ifft
-from finonax.stepper import BlackScholes
 
 
 # ---- Spectral Greeks (delta, gamma) ----
@@ -55,23 +54,25 @@ def vega(stepper_factory, payoff_fn, S_grid, num_steps, i, *, sigma, r, T):
     """Compute ∂V/∂σ via autodiff through the PDE stepper.
 
     Arguments:
-      - stepper_factory: callable (sigma, r, T) -> BackwardStepper. Called
-        once with concrete values to validate parameters and extract grid
-        metadata (domain_extent, num_points).
+      - stepper_factory: callable (sigma, r, T) -> BackwardStepper. Works with
+        any BackwardStepper subclass (BlackScholes, Merton, etc.). Called once
+        with concrete values to validate parameters eagerly. Any model
+        parameters beyond sigma and r (e.g., lambda_jump, mu_jump, sigma_jump
+        for Merton) must be closed over by the factory.
       - payoff_fn: callable S -> V at τ=0.
       - S_grid: 1D array of spot prices, shape (num_points,).
       - num_steps: Python int, number of forward-τ steps.
       - i: integer index into S_grid.
-      - sigma, r, T: keyword-only floats specifying the model parameters.
+      - sigma, r, T: keyword-only floats specifying the differentiable model
+        parameters.
 
     Returns:
       - vega: scalar, ∂V/∂σ at S_grid[i].
     """
-    _ref = stepper_factory(sigma, r, T)
-    domain_extent, N = _ref.domain_extent, _ref.num_points
+    stepper_factory(sigma, r, T)
 
     def price_at_i(s):
-        stepper = BlackScholes(domain_extent, N, T / num_steps, sigma=s, r=r)
+        stepper = stepper_factory(s, r, T)
         return stepper.price(payoff_fn, S_grid, num_steps)[i]
 
     return float(jax.grad(price_at_i)(float(sigma)))
@@ -80,16 +81,16 @@ def vega(stepper_factory, payoff_fn, S_grid, num_steps, i, *, sigma, r, T):
 def rho(stepper_factory, payoff_fn, S_grid, num_steps, i, *, sigma, r, T):
     """Compute ∂V/∂r via autodiff through the PDE stepper.
 
-    Arguments: same as vega, differentiating with respect to r.
+    Arguments: same as vega; differentiates with respect to r. Any model
+    parameters beyond sigma and r must be closed over by the factory.
 
     Returns:
       - rho: scalar, ∂V/∂r at S_grid[i].
     """
-    _ref = stepper_factory(sigma, r, T)
-    domain_extent, N = _ref.domain_extent, _ref.num_points
+    stepper_factory(sigma, r, T)
 
     def price_at_i(r_val):
-        stepper = BlackScholes(domain_extent, N, T / num_steps, sigma=sigma, r=r_val)
+        stepper = stepper_factory(sigma, r_val, T)
         return stepper.price(payoff_fn, S_grid, num_steps)[i]
 
     return float(jax.grad(price_at_i)(float(r)))
@@ -101,16 +102,16 @@ def theta(stepper_factory, payoff_fn, S_grid, num_steps, i, *, sigma, r, T):
     Returns theta in the trader convention: theta = -∂V/∂T (time decay,
     negative for long options), matching the convention in finonax.analytical.
 
-    Arguments: same as vega, differentiating with respect to T.
+    Arguments: same as vega; differentiates with respect to T. Any model
+    parameters beyond sigma and r must be closed over by the factory.
 
     Returns:
       - theta: scalar, -∂V/∂T at S_grid[i].
     """
-    _ref = stepper_factory(sigma, r, T)
-    domain_extent, N = _ref.domain_extent, _ref.num_points
+    stepper_factory(sigma, r, T)
 
     def price_at_i(T_val):
-        stepper = BlackScholes(domain_extent, N, T_val / num_steps, sigma=sigma, r=r)
+        stepper = stepper_factory(sigma, r, T_val)
         return stepper.price(payoff_fn, S_grid, num_steps)[i]
 
     return float(-jax.grad(price_at_i)(float(T)))
